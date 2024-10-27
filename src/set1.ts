@@ -47,7 +47,20 @@ async function main() {
 
     console.log("Implement hamming distance");
     console.log("Distance between:this is a test and wokka wokka!!!")
-    console.log(CryptoPals.hammingDistance("this is a test", "wokka wokka!!!"));
+    console.log(CryptoPals.hammingDistance(Buffer.from("this is a test"), Buffer.from("wokka wokka!!!")));
+    console.log();
+
+    console.log("Break repeating-key xor");
+    const rlines = await CryptoPals.readFile('set1q6.txt');
+    if(rlines) {
+        const rbuf = Buffer.from(rlines.join(''), "base64");
+        const recoveredRepeating = CryptoPals.decodeRepeatingXor(rbuf);
+        console.log(`Key: ${recoveredRepeating.key}`)
+        console.log(recoveredRepeating.text)
+    } else {
+        console.log("Could not read set1q6.txt")
+    }
+
 }
 
 main();

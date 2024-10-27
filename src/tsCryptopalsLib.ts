@@ -68,17 +68,26 @@ export class CryptoPals {
         return retval;
     }
 
+    public static englishScore(text: string): number {
+        let retval = 0;
+        const countLetters: string[] = [' ', 'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'u'];
+        for(const letter of text) {
+            if(countLetters.includes(letter)) retval++;
+        }
+        return retval;
+    }
+
     public static decodeSingleByteXor(x: Buffer): Decryption {
         let retval = "";
-        let bestscore = 100;
+        let bestscore = 0;
         let keyOrd = 0;
         for( let i = 0; i < 256; i++){
             const y: Buffer = Buffer.alloc(x.length).fill(i);
             const candidate: Buffer | null = this.fixedXor(x, y);
             if(candidate) {
                 const possible = candidate.toString()
-                const score = this.englishFreqDiff(possible);
-                if(score < bestscore) {
+                const score = this.englishScore(possible);
+                if(score > bestscore) {
                     retval = possible;
                     bestscore = score;
                     keyOrd = i;
@@ -102,8 +111,9 @@ export class CryptoPals {
 
     public static getRepeatingXorKeyLength(x: Buffer): number[] {
         const hammings: number[] = [];
+        const maxkeyLen = Math.floor(x.length / 4) > 40 ? 40 : Math.floor(x.length / 4)
 
-        for(let i = 2; i < Math.floor(x.length / 4); i++) {
+        for(let i = 2; i < maxkeyLen; i++) {
             const block0 = x.subarray(0, i);
             const block1 = x.subarray(i, i*2);
             const block2 = x.subarray(i*2, i*3);
@@ -128,12 +138,16 @@ export class CryptoPals {
     public static decodeRepeatingXor(x: Buffer): Decryption {
         let retval = new Decryption('','');
         const keyLength = this.getRepeatingXorKeyLength(x);
-        // TODO: Implement key search by single character using the length as offset between blocks
-        // loop i = 0 to keylength-1
-        // extract slice from buffer using i as start index and keylength as step
-        // feed that buffer to decodeSingleByteXor and append returned key to decryption key
-        // end loop
-        // decrypt text using retrieved key
+        const blockSize = Math.floor(x.length / keyLength[0]);
+
+        for(let i = 0; i < keyLength[0]; i++) {
+            const blockSlice = Buffer.alloc(blockSize);
+            for(let j = 0; j < blockSize; j++) blockSlice[j] = x[(j * keyLength[0])+i];
+            const recoverKey = this.decodeSingleByteXor(blockSlice);
+            retval.key += recoverKey.key;
+        }
+
+        retval.text = this.repeatingKeyXor(x, retval.key).toString();
         return retval;
     }
 }

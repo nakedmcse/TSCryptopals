@@ -44,6 +44,14 @@ describe("unit tests", () => {
             expect(englishScore).toBeLessThan(garbageScore);
         })
 
+        it("englishScore: Return English line",() => {
+            const english: string = "The quick brown fox jumped over the lazy hen";
+            const garbage: string = "xbh bnofepioj bhhfhehi hnnghwyugebiw sgbg ssx";
+            const englishScore: number = CryptoPals.englishScore(english);
+            const garbageScore: number = CryptoPals.englishScore(garbage);
+            expect(garbageScore).toBeLessThan(englishScore);
+        })
+
         it("decodeSingleByteXor: Return english line and key", () => {
             const testBuffer = Buffer.from("1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736", "hex");
             const decoded: Decryption = CryptoPals.decodeSingleByteXor(testBuffer);
@@ -51,10 +59,12 @@ describe("unit tests", () => {
             expect(decoded.key).toEqual("X");
         })
 
-        it("repeatingKeyXor: Return encrypted buffer", () => {
+        it("repeatingKeyXor: Return encrypted and decrypted buffer", () => {
             const line = Buffer.from("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
             const encoded = CryptoPals.repeatingKeyXor(line, "ICE");
+            const decoded = CryptoPals.repeatingKeyXor(encoded, "ICE");
             expect(encoded.toString("hex")).toEqual("0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f");
+            expect(decoded.toString()).toEqual("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
         })
 
         it("hammingDistance: Return 37 for given strings", () => {
@@ -68,5 +78,6 @@ describe("unit tests", () => {
             const recoveredKeyLength = CryptoPals.getRepeatingXorKeyLength(encoded);
             expect(recoveredKeyLength[0]).toEqual(10);
         })
+
     })
 })
