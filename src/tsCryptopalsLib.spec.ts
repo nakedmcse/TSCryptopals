@@ -58,8 +58,15 @@ describe("unit tests", () => {
         })
 
         it("hammingDistance: Return 37 for given strings", () => {
-            const hamming = CryptoPals.hammingDistance("this is a test", "wokka wokka!!!");
+            const hamming = CryptoPals.hammingDistance(Buffer.from("this is a test"), Buffer.from("wokka wokka!!!"));
             expect(hamming).toEqual(37);
+        })
+
+        it("getRepeatingXorKeyLength: Return matching key length", () => {
+            const line = Buffer.from("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
+            const encoded = CryptoPals.repeatingKeyXor(line, "ICEBABY");
+            const recoveredKeyLength = CryptoPals.getRepeatingXorKeyLength(encoded);
+            expect(recoveredKeyLength.includes(7)).toEqual(true);
         })
     })
 })

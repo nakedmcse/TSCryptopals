@@ -88,10 +88,8 @@ export class CryptoPals {
         return new Decryption(String.fromCharCode(keyOrd), retval);
     }
 
-    public static hammingDistance(xString: string, yString: string): number {
+    public static hammingDistance(x: Buffer, y: Buffer): number {
         let retval = 0;
-        const x = Buffer.from(xString);
-        const y = Buffer.from(yString);
         if(x.length !== y.length) {
             retval += Math.abs(x.length - y.length) * 8;  // Account for missing bytes
         }
@@ -99,6 +97,38 @@ export class CryptoPals {
         for(let i = 0; i < len; i++) {
             retval += this.bitCountLookup[x[i] ^ y[i]];
         }
+        return retval;
+    }
+
+    public static getRepeatingXorKeyLength(x: Buffer): number[] {
+        const hammings: number[] = [];
+
+        for(let i = 2; i < Math.floor(x.length / 4); i++) {
+            const block0 = x.subarray(0, i);
+            const block1 = x.subarray(i, i*2);
+            const block2 = x.subarray(i*2, i*3);
+            const block3 = x.subarray(i*3, i*4);
+            const hamming1 = this.hammingDistance(block0, block1) / i;
+            const hamming2 = this.hammingDistance(block2, block3) / i;
+            const avgHamming = (hamming1 + hamming2) / 2;
+            hammings.push(avgHamming)
+        }
+
+        const retval = hammings.map((val, idx) => ({val, idx}))
+            .sort((a, b) => a.val - b.val)
+            .slice(0,4).map(x => x.idx+2);
+        return retval;
+    }
+
+    public static decodeRepeatingXor(x: Buffer): Decryption {
+        let retval = new Decryption('','');
+        const keyLength = this.getRepeatingXorKeyLength(x);
+        // TODO: Implement key search by single character using the length as offset between blocks
+        // loop i = 0 to keylength-1
+        // extract slice from buffer using i as start index and keylength as step
+        // feed that buffer to decodeSingleByteXor and append returned key to decryption key
+        // end loop
+        // decrypt text using retrieved key
         return retval;
     }
 }
