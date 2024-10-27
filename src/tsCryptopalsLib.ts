@@ -108,12 +108,17 @@ export class CryptoPals {
             const block1 = x.subarray(i, i*2);
             const block2 = x.subarray(i*2, i*3);
             const block3 = x.subarray(i*3, i*4);
-            const hamming1 = this.hammingDistance(block0, block1) / i;
-            const hamming2 = this.hammingDistance(block2, block3) / i;
-            const avgHamming = (hamming1 + hamming2) / 2;
+            const hamming1 = this.hammingDistance(block0, block1);
+            const hamming2 = this.hammingDistance(block0, block2);
+            const hamming3 = this.hammingDistance(block0, block3);
+            const hamming4 = this.hammingDistance(block1, block2);
+            const hamming5 = this.hammingDistance(block1, block3);
+            const hamming6 = this.hammingDistance(block2, block3);
+            const avgHamming = ((hamming1 + hamming2 + hamming3 + hamming4 + hamming5 + hamming6) / 6) / i;
             hammings.push(avgHamming)
         }
 
+        // Return min 4 as best candidates
         const retval = hammings.map((val, idx) => ({val, idx}))
             .sort((a, b) => a.val - b.val)
             .slice(0,4).map(x => x.idx+2);

@@ -64,9 +64,9 @@ describe("unit tests", () => {
 
         it("getRepeatingXorKeyLength: Return matching key length", () => {
             const line = Buffer.from("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
-            const encoded = CryptoPals.repeatingKeyXor(line, "ICEBABY");
+            const encoded = CryptoPals.repeatingKeyXor(line, "ICEBABY123");
             const recoveredKeyLength = CryptoPals.getRepeatingXorKeyLength(encoded);
-            expect(recoveredKeyLength.includes(7)).toEqual(true);
+            expect(recoveredKeyLength[0]).toEqual(10);
         })
     })
 })
