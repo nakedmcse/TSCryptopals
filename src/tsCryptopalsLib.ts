@@ -28,26 +28,17 @@ export class CryptoPals {
         if(hex.length % 2 !== 0) return null;
         if(!hex_regex.test(hex)) return null;
 
-        const bytes: Buffer = Buffer.from(hex, "hex");
-        return bytes.toString("base64");
+        return Buffer.from(hex, "hex").toString("base64");
     }
 
     public static fixedXor(x: Buffer, y: Buffer): Buffer | null {
         if(x.length !== y.length) return null;
-        const retval = Buffer.alloc(x.length);
-        for(let i = 0; i < x.length; i++) {
-            retval[i] = x[i] ^ y[i];
-        }
-        return retval;
+        return Buffer.from(x.map((v, idx) => (v ^ y[idx])));
     }
 
     public static repeatingKeyXor(x: Buffer, keyString: string): Buffer {
-        const retval = Buffer.alloc(x.length);
         const key = Buffer.from(keyString);
-        for(let i = 0; i < x.length; i++) {
-            retval[i] = x[i] ^ key[i % key.length];
-        }
-        return retval;
+        return Buffer.from(x.map((v, idx) => (v ^ key[idx % key.length])));
     }
 
     public static englishFreqDiff(text: string): number {
@@ -79,9 +70,8 @@ export class CryptoPals {
     }
 
     public static decodeSingleByteXor(x: Buffer): Decryption {
-        let retval = "";
+        const retval = new Decryption("", "");
         let bestscore = 0;
-        let keyOrd = 0;
         for( let i = 0; i < 256; i++){
             const y: Buffer = Buffer.alloc(x.length).fill(i);
             const candidate: Buffer | null = this.fixedXor(x, y);
@@ -89,13 +79,13 @@ export class CryptoPals {
                 const possible = candidate.toString()
                 const score = this.englishScore(possible);
                 if(score > bestscore) {
-                    retval = possible;
                     bestscore = score;
-                    keyOrd = i;
+                    retval.text = possible;
+                    retval.key = String.fromCharCode(i);
                 }
             }
         }
-        return new Decryption(String.fromCharCode(keyOrd), retval);
+        return retval;
     }
 
     public static hammingDistance(x: Buffer, y: Buffer): number {
