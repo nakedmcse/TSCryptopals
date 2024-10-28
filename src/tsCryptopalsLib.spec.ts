@@ -79,5 +79,23 @@ describe("unit tests", () => {
             expect(recoveredKeyLength[0]).toEqual(10);
         })
 
+        it("encodeAES128ECB: Returns given hex for phrase",  () => {
+            const phrase = Buffer.from("You may take our lives, but you'll never take our freedom!");
+            const encoded = CryptoPals.encodeAES128ECB(phrase, "YELLOW SUBMARINE");
+            expect(encoded.toString("hex")).toEqual("3bbe4d8bdc321f28fadf89e20a722d491a79d2517ddefcf3d49055b120e5b6b9d55d814cf7d035377bc4a87da0afdf55db6c42340a2873e99962dcbd659f4a1e");
+        })
+
+        it("decodeAES128ECB: Returns phrase for given hex", () => {
+            const encoded = Buffer.from("3bbe4d8bdc321f28fadf89e20a722d491a79d2517ddefcf3d49055b120e5b6b9d55d814cf7d035377bc4a87da0afdf55db6c42340a2873e99962dcbd659f4a1e", "hex");
+            const decoded = CryptoPals.decodeAES128ECB(encoded, "YELLOW SUBMARINE");
+            expect(decoded.toString()).toEqual("You may take our lives, but you'll never take our freedom!")
+        })
+
+        it("likelyAES128ECB: Returns true for encoded text", () => {
+            const phrase = Buffer.from("This is a test!!This is a test!!");
+            const encoded = CryptoPals.encodeAES128ECB(phrase, "YELLOW SUBMARINE");
+            expect(CryptoPals.likelyAES128ECB(encoded)).toEqual(true);
+        })
+
     })
 })

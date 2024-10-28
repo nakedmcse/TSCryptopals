@@ -1,5 +1,6 @@
 // TS Cryptopals lib
 import fs from "node:fs/promises";
+import crypto from "crypto";
 
 interface StringDictionary<T> {
     [key: string]: T;
@@ -149,5 +150,29 @@ export class CryptoPals {
 
         retval.text = this.repeatingKeyXor(x, retval.key).toString();
         return retval;
+    }
+
+    public static decodeAES128ECB(x: Buffer, key: string): Buffer {
+        const aes = crypto.createDecipheriv('aes-128-ecb', Buffer.from(key), null);
+        aes.setAutoPadding(true);
+        const decoded = aes.update(x);
+        return Buffer.concat([decoded, aes.final()]);
+    }
+
+    public static encodeAES128ECB(x: Buffer, key: string): Buffer {
+        const aes = crypto.createCipheriv('aes-128-ecb', Buffer.from(key), null);
+        aes.setAutoPadding(true);
+        const encoded = aes.update(x);
+        return Buffer.concat([encoded, aes.final()]);
+    }
+
+    public static likelyAES128ECB(x: Buffer): boolean {
+        const blocks = new Map<string, Buffer>();
+        for(let i = 0; i < x.length; i = i + 16) {
+            const key = x.subarray(i, i+16).toString("hex");
+            if(blocks.has(key)) return true;
+            blocks.set(key, x.subarray(i, i+16));
+        }
+        return false;
     }
 }
