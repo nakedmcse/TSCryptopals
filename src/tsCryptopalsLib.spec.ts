@@ -24,6 +24,18 @@ describe("unit tests", () => {
             expect(fs.readFile).toHaveBeenCalledWith("/some/path/file.txt", "utf-8");
         })
 
+        it("combinations: Return a list of combinations", () => {
+            const testList: Array<string> = ['a', 'b', 'c', 'd'];
+            const retval = CryptoPals.combinations(testList);
+            expect(retval.length).toEqual(6);
+        })
+
+        it("getBlocks: Return a list of blocks", () => {
+            const testBuffer = Buffer.from("123456789");
+            const retval = CryptoPals.getBlocks(testBuffer, 3);
+            expect(retval.length).toEqual(3);
+        })
+
         it("hexToBase64: Return SSdt...b29t", () => {
             const retval = CryptoPals.hexToBase64("49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d");
             expect(retval).toEqual("SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t");

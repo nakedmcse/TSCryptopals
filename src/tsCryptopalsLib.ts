@@ -5,8 +5,13 @@ import crypto from "crypto";
 interface StringDictionary<T> {
     [key: string]: T;
 }
+
 export class Decryption {
     public constructor(public key: string, public text: string) {}
+}
+
+export class Combination<T> {
+    public constructor(public x: T, public y: T) {}
 }
 
 export class CryptoPals {
@@ -21,6 +26,22 @@ export class CryptoPals {
         } catch {
             return null;
         }
+    }
+
+    public static combinations(inboundList: Array<T>): Array<Combination<T>> {
+        const retval = new Array<Combination<T>>();
+        for(let i = 0; i < inboundList.length - 1; i++) {
+            for(let j = i+1; j < inboundList.length; j++) {
+                retval.push(new Combination<T>(inboundList[i], inboundList[j]));
+            }
+        }
+        return retval;
+    }
+
+    public static getBlocks(x: Buffer, blocksize: number): Array<Buffer> {
+        const retval = new Array<Buffer>();
+        for (let i = 0; i < x.length; i += blocksize) retval.push(x.subarray(i, i+blocksize));
+        return retval;
     }
 
     public static hexToBase64(hex: string): string | null {
