@@ -28,7 +28,7 @@ export class CryptoPals {
         }
     }
 
-    public static combinations(inboundList: Array<T>): Array<Combination<T>> {
+    public static combinations<T>(inboundList: Array<T>): Array<Combination<T>> {
         const retval = new Array<Combination<T>>();
         for(let i = 0; i < inboundList.length - 1; i++) {
             for(let j = i+1; j < inboundList.length; j++) {
@@ -38,9 +38,13 @@ export class CryptoPals {
         return retval;
     }
 
-    public static getBlocks(x: Buffer, blocksize: number): Array<Buffer> {
+    public static getBlocks(x: Buffer, blocksize: number, maxblocks: number = -1): Array<Buffer> {
         const retval = new Array<Buffer>();
-        for (let i = 0; i < x.length; i += blocksize) retval.push(x.subarray(i, i+blocksize));
+        for (let i = 0; i < x.length; i += blocksize) {
+            if(maxblocks === 0) break;
+            retval.push(x.subarray(i, i+blocksize));
+            maxblocks--;
+        }
         return retval;
     }
 
@@ -126,17 +130,11 @@ export class CryptoPals {
         const maxkeyLen = Math.floor(x.length / 4) > 40 ? 40 : Math.floor(x.length / 4)
 
         for(let i = 2; i < maxkeyLen; i++) {
-            const block0 = x.subarray(0, i);
-            const block1 = x.subarray(i, i*2);
-            const block2 = x.subarray(i*2, i*3);
-            const block3 = x.subarray(i*3, i*4);
-            const hamming1 = this.hammingDistance(block0, block1);
-            const hamming2 = this.hammingDistance(block0, block2);
-            const hamming3 = this.hammingDistance(block0, block3);
-            const hamming4 = this.hammingDistance(block1, block2);
-            const hamming5 = this.hammingDistance(block1, block3);
-            const hamming6 = this.hammingDistance(block2, block3);
-            const avgHamming = ((hamming1 + hamming2 + hamming3 + hamming4 + hamming5 + hamming6) / 6) / i;
+            const blocks = this.getBlocks(x, i, 4);
+            const combos = this.combinations(blocks);
+            const hammingSum = combos.map(e => this.hammingDistance(e.x, e.y))
+                .reduce((acc, v) => (acc + v));
+            const avgHamming = (hammingSum / combos.length) / i;
             hammings.push(avgHamming)
         }
 

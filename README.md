@@ -10,6 +10,13 @@ The library contains the functions necessary for the questions.
 ### readFile
 This reads a given file into a line array.
 
+### combinations
+This returns a list of all x,y combinations of items from a given list.
+
+### getBlocks
+This returns a list of blocks of a given block size extracted from a given Buffer.
+An option maximum number of blocks to return can also be specified.
+
 ### hexToBase64
 This takes a given hex string and returns the base64 encoded version of it.
 
