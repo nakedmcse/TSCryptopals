@@ -24,6 +24,13 @@ describe("unit tests", () => {
             expect(fs.readFile).toHaveBeenCalledWith("/some/path/file.txt", "utf-8");
         })
 
+        it("generateKeys: Return all 2 char key combinations", () => {
+            const retval = CryptoPals.generateKeys(2);
+            expect(retval.includes("A")).toEqual(true);
+            expect(retval.includes("ZZ")).toEqual(true);
+            expect(retval.length).toEqual(2**16);
+        })
+
         it("combinations: Return a list of combinations", () => {
             const testList: Array<string> = ['a', 'b', 'c', 'd'];
             const retval = CryptoPals.combinations(testList);
