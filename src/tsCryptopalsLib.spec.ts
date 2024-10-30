@@ -104,6 +104,14 @@ describe("unit tests", () => {
             expect(recoveredKeyLength[0]).toEqual(10);
         })
 
+        it("decodeRepeatingXorBruteForce: Return english text and key for short key", () => {
+            const line = Buffer.from("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
+            const encoded = CryptoPals.repeatingKeyXor(line, "IC");
+            const decoded = CryptoPals.decodeRepeatingXorBruteForce(encoded, 2);
+            expect(decoded.text).toEqual("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
+            expect(decoded.key).toEqual("IC");
+        })
+
         it("encodeAES128ECB: Returns given hex for phrase",  () => {
             const phrase = Buffer.from("You may take our lives, but you'll never take our freedom!");
             const encoded = CryptoPals.encodeAES128ECB(phrase, "YELLOW SUBMARINE");

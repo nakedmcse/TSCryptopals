@@ -192,6 +192,22 @@ export class CryptoPals {
         return retval;
     }
 
+    public static decodeRepeatingXorBruteForce(x: Buffer, maxKeylen: number): Decryption {
+        let retval = new Decryption('', '');
+        const possibleKeys = this.generateKeys(maxKeylen);
+        let bestMatch = 0;
+        for(const key of possibleKeys) {
+            const text = this.repeatingKeyXor(x, key).toString();
+            const score = this.englishScore(text);
+            if(score > bestMatch) {
+                retval.key = key;
+                retval.text = text;
+                bestMatch = score;
+            }
+        }
+        return retval;
+    }
+
     public static decodeAES128ECB(x: Buffer, key: string): Buffer {
         const aes = crypto.createDecipheriv('aes-128-ecb', Buffer.from(key), null);
         aes.setAutoPadding(true);

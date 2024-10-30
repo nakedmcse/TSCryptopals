@@ -10,6 +10,9 @@ The library contains the functions necessary for the questions.
 ### readFile
 This reads a given file into a line array.
 
+### generateKeys
+This takes a given key length and returns an array of all keys of that length.  It is limited to 4 characters max.
+
 ### combinations
 This returns a list of all x,y combinations of items from a given list.
 
@@ -52,7 +55,13 @@ This takes a buffer and returns the top four most likely key lengths for repeati
 This takes a buffer and returns the most likely decrypted text and key for repeating Xor.
 > **NOTE WELL:**
 >
->This is based on statistical analysis and is inacurate for key lengths below 10 characters or over 40 characters.
+>This is based on statistical analysis and is inaccurate for key lengths below 10 characters or over 40 characters.
+
+###  decodeRepeatingXorBruteForce
+This takes a buffer and a maximum key length and returns the most likely decrypted text and key for repeating Xor.
+> **NOTE WELL:**
+>
+>This is brute force intended for short key lengths and is limited to 4 character keys
 
 ### decodeAES128ECB
 This takes an AES 128 ECB encrypted buffer and a string as a key, and returns an decrypted buffer.
