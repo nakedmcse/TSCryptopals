@@ -28,34 +28,40 @@ export class CryptoPals {
         }
     }
 
-    public static generateKeys(keylen: number): Array<string> {
-        const retval: string[] = [];
-        if(keylen > 4) keylen = 4;
-        keylen *= 8;
-        for(let i = 0; i < 2**keylen; i++) {
+    public static async generateKeys(keylen: number, start: number = 0, end: number = 0): Promise<Array<string>> {
+        function evalIndex(i: number): string {
             if(i <= 2**8) {
-                const extract1 = String.fromCharCode(i & 0xFF);
-                retval.push(extract1);
+                return String.fromCharCode(i & 0xFF);
             }
             else if(i <= 2**16) {
                 const extract1 = String.fromCharCode((i & 0xFF00) >> 8);
                 const extract2 = String.fromCharCode(i & 0xFF);
-                retval.push(extract1 + extract2);
+                return extract1 + extract2;
             }
             else if(i <= 2**24) {
                 const extract1 = String.fromCharCode((i & 0xFF0000) >> 16);
                 const extract2 = String.fromCharCode((i & 0xFF00) >> 8);
                 const extract3 = String.fromCharCode(i & 0xFF);
-                retval.push(extract1 + extract2 + extract3);
+                return extract1 + extract2 + extract3;
             }
             else {
                 const extract1 = String.fromCharCode((i & 0xFF000000) >> 24);
                 const extract2 = String.fromCharCode((i & 0xFF0000) >> 16);
                 const extract3 = String.fromCharCode((i & 0xFF00) >> 8);
                 const extract4 = String.fromCharCode(i & 0xFF);
-                retval.push(extract1 + extract2 + extract3 + extract4);
+                return extract1 + extract2 + extract3 + extract4;
             }
         }
+
+        const retval: string[] = [];
+        const taskQueue: Promise<void>[] = [];
+        if(keylen > 4) keylen = 4;
+        if(end === 0) end = 2**(keylen*8);
+        for(let i = start; i < end; i++) {
+            taskQueue.push(new Promise<void>((resolve) => {retval.push(evalIndex(i)); resolve()}));
+            if (taskQueue.length === 8) await Promise.race(taskQueue);
+        }
+        await Promise.all(taskQueue);
         return retval;
     }
 
@@ -192,9 +198,9 @@ export class CryptoPals {
         return retval;
     }
 
-    public static decodeRepeatingXorBruteForce(x: Buffer, maxKeylen: number): Decryption {
+    public static async decodeRepeatingXorBruteForce(x: Buffer, maxKeylen: number): Promise<Decryption> {
         let retval = new Decryption('', '');
-        const possibleKeys = this.generateKeys(maxKeylen);
+        const possibleKeys = await this.generateKeys(maxKeylen);
         let bestMatch = 0;
         for(const key of possibleKeys) {
             const text = this.repeatingKeyXor(x, key).toString();
