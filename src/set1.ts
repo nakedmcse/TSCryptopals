@@ -123,6 +123,14 @@ async function question8() {
     console.log();
 }
 
+async function timeGenerateKeys() {
+    console.log("Timing Generate Keys");
+    const start = performance.now();
+    const syncKeys = CryptoPals.generateKeys(3);
+    const end = performance.now();
+    console.log(`Sync keygen took ${end-start}ms, returning ${syncKeys.length} keys`);
+}
+
 async function main() {
     console.log("Cryptopals Set 1 Answers");
     console.log();
@@ -135,6 +143,7 @@ async function main() {
     await question6();
     await question7();
     await question8();
+    await timeGenerateKeys();
 }
 
 main();

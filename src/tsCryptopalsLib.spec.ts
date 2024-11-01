@@ -24,15 +24,15 @@ describe("unit tests", () => {
             expect(fs.readFile).toHaveBeenCalledWith("/some/path/file.txt", "utf-8");
         })
 
-        it("generateKeys: Return all 2 char key combinations", async () => {
-            const retval = await CryptoPals.generateKeys(2);
+        it("generateKeys: Return all 2 char key combinations", () => {
+            const retval = CryptoPals.generateKeys(3);
             expect(retval.includes("A")).toEqual(true);
-            expect(retval.includes("ZZ")).toEqual(true);
-            expect(retval.length).toEqual(2**16);
+            expect(retval.includes("ZZZ")).toEqual(true);
+            expect(retval.length).toEqual(2**24);
         })
 
-        it("generateKeys: Return last 1000 4 char key combinations", async () => {
-            const retval = await CryptoPals.generateKeys(4, (2**32)-1000, 2**32);
+        it("generateKeys: Return last 1000 4 char key combinations", () => {
+            const retval = CryptoPals.generateKeys(4, (2**32)-1000, 2**32);
             expect(retval.length).toEqual(1000);
         })
 
@@ -112,7 +112,7 @@ describe("unit tests", () => {
         it("decodeRepeatingXorBruteForce: Return english text and key for short key", async () => {
             const line = Buffer.from("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
             const encoded = CryptoPals.repeatingKeyXor(line, "IC");
-            const decoded = await CryptoPals.decodeRepeatingXorBruteForce(encoded, 2);
+            const decoded = CryptoPals.decodeRepeatingXorBruteForce(encoded, 2);
             expect(decoded.text).toEqual("Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal");
             expect(decoded.key).toEqual("IC");
         })
